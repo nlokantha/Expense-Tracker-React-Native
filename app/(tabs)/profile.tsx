@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View } from "react-native"
 import React from "react"
-import { Tabs } from "expo-router"
 
-const _layout = () => {
-  return <Tabs></Tabs>
+const Profile = () => {
+  return (
+    <View>
+      <Text>Profile</Text>
+    </View>
+  )
 }
 
-export default _layout
+export default Profile
 
 const styles = StyleSheet.create({})

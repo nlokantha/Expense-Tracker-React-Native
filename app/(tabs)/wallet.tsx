@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View } from "react-native"
 import React from "react"
-import { Tabs } from "expo-router"
 
-const _layout = () => {
-  return <Tabs></Tabs>
+const Wallet = () => {
+  return (
+    <View>
+      <Text>Wallet</Text>
+    </View>
+  )
 }
 
-export default _layout
+export default Wallet
 
 const styles = StyleSheet.create({})
