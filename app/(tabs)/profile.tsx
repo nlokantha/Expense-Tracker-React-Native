@@ -6,6 +6,7 @@ import { verticalScale } from "@/utils/styling"
 import Header from "@/components/Header"
 import Typo from "@/components/Typo"
 import { useAuth } from "@/contexts/authContext"
+import { Image } from "expo-image"
 
 const Profile = () => {
   const { user } = useAuth()
@@ -18,7 +19,14 @@ const Profile = () => {
         {/* user info */}
         <View style={styles.userInfo}>
           {/* avatar */}
-          <View></View>
+          <View>
+            <Image
+              source={user?.image}
+              style={styles.avatar}
+              contentFit="contain"
+              transition={100}
+            />
+          </View>
           {/* name & email */}
           <View style={styles.nameContainer}>
             <Typo size={24} fontWeight={"600"} color={colors.neutral100}>
