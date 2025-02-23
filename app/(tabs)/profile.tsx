@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native"
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import React from "react"
 import ScreenWrapper from "@/components/ScreenWrapper"
 import { colors, radius, spacingX, spacingY } from "@/constants/theme"
@@ -7,9 +7,66 @@ import Header from "@/components/Header"
 import Typo from "@/components/Typo"
 import { useAuth } from "@/contexts/authContext"
 import { Image } from "expo-image"
+import { getProfileImage } from "@/services/imageServices"
+import { accountOptionType } from "@/types"
+import * as Icons from "phosphor-react-native"
+import Animated, { FadeInDown } from "react-native-reanimated"
+import { signOut } from "firebase/auth"
+import { auth } from "@/config/firebase"
+import { useRouter } from "expo-router"
 
 const Profile = () => {
   const { user } = useAuth()
+  const router = useRouter()
+  const accountOptions : accountOptionType[] = [
+    {
+      title:"Edit Profile",
+      icon: <Icons.User size={26} color="white" weight="fill"/>,
+      routeName:"/(modals)/profileModal",
+      bgColor:"#6366f1"
+    },
+    {
+      title:"Settings",
+      icon: <Icons.GearSix size={26} color="white" weight="fill"/>,
+      // routeName:"/(modals)/profileModal",
+      bgColor:"#059669"
+    },
+    {
+      title:"Privacy Policy",
+      icon: <Icons.Lock size={26} color="white" weight="fill"/>,
+      // routeName:"/(modals)/profileModal",
+      bgColor:colors.neutral600
+    },
+    {
+      title:"Logout",
+      icon: <Icons.Power size={26} color="white" weight="fill"/>,
+      // routeName:"/(modals)/profileModal",
+      bgColor:"#e11d48"
+    },
+  ]
+  const handleLogout = async ()=>{
+    await signOut(auth)
+  }
+  const showAlertDialog = ()=>{
+    Alert.alert("Confirm","Are you sure you want to Logout?",[
+      {
+        text:"Cancel",
+        onPress:()=>console.log("cancel logout"),
+        style:"cancel"
+      },
+      {
+        text:"Logout",
+        onPress:()=>handleLogout(),
+        style:"destructive"
+      }
+    ])
+  }
+  const handlePress = (item:accountOptionType)=>{
+    if(item.title == "Logout"){
+      showAlertDialog()
+    }
+    if(item.routeName) router.push(item.routeName)
+  }
   return (
     <ScreenWrapper>
       <View style={styles.container}>
@@ -21,7 +78,7 @@ const Profile = () => {
           {/* avatar */}
           <View>
             <Image
-              source={user?.image}
+              source={getProfileImage(user?.image)}
               style={styles.avatar}
               contentFit="contain"
               transition={100}
@@ -36,6 +93,28 @@ const Profile = () => {
               {user?.email}
             </Typo>
           </View>
+        </View>
+
+        {/* Account Opctions */}
+        <View style={styles.accountOptions}>
+          {
+            accountOptions.map((item,index)=>{
+              return (
+                <Animated.View entering={FadeInDown.delay(index*50).springify().damping(14)} key={index.toString()} style={styles.listItem}>
+                  <TouchableOpacity style={styles.flexRow} onPress={()=>handlePress(item)}>
+                    {/* icon */}
+                    <View style={[styles.listIcon,{backgroundColor:item?.bgColor}]}>
+                      {
+                        item.icon && item.icon
+                      }
+                    </View>
+                    <Typo size={16} style={{flex:1}} fontWeight={"600"}>{item?.title}</Typo>
+                    <Icons.CaretRight size={verticalScale(20)} weight="bold" color={colors.white}/>
+                  </TouchableOpacity>
+                  
+                  </Animated.View>
+              );
+            })}
         </View>
       </View>
     </ScreenWrapper>
